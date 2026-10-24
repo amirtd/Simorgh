@@ -1,0 +1,55 @@
+# Local credentials and machine-specific configuration
+.env
+.env.*
+!.env.example
+!.env.sample
+connection.json
+*.pem
+*.key
+
+# Python environments and generated files
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Houdini caches, autosaves, and generated texture conversions
+backup/
+backups/
+autosave/
+cache/
+caches/
+*.sim
+*.sim.gz
+*.rat
+*.hip~
+*.hiplc~
+*.hipnc~
+*.bak
+*.tmp
+*.part
+
+# Generated render output and render queue state
+render/
+renders/
+render-jobs/
+previews/
+*.log
+
+# Generated review bundles
+/abstract_fish_review.zip
+/abstract_fish_v2_controls.zip
+/houdini-remote-render.zip
+
+# Editor and operating system files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+*.swp
+*.swo

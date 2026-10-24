@@ -1,0 +1,8 @@
+{
+  "wind_updates_without_forced_recook": true,
+  "roots_pinned": true,
+  "zero_force_restores_shape": true,
+  "flat_single_surface_all_42_ribbons": true,
+  "per_system_flat_override": true,
+  "baseline_restored": true
+}

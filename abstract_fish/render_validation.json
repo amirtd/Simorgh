@@ -1,0 +1,38 @@
+{
+  "houdini": "22.0.429",
+  "license": "Apprentice",
+  "renderer": "Karma CPU",
+  "samples_per_pixel": 32,
+  "status": "completed",
+  "review": "Previews opened and inspected; artistic approval pending",
+  "frames": [
+    {
+      "view": "material_id",
+      "path": "previews/material_id.png",
+      "width": 960,
+      "height": 540,
+      "bytes": 125587
+    },
+    {
+      "view": "wireframe",
+      "path": "previews/wireframe.png",
+      "width": 960,
+      "height": 540,
+      "bytes": 442653
+    },
+    {
+      "view": "shaded",
+      "path": "previews/shaded.png",
+      "width": 960,
+      "height": 540,
+      "bytes": 335431
+    },
+    {
+      "view": "three_quarter",
+      "path": "previews/three_quarter.png",
+      "width": 960,
+      "height": 540,
+      "bytes": 255702
+    }
+  ]
+}

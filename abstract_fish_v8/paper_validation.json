@@ -1,0 +1,17 @@
+{
+  "single_surface_ribbons": true,
+  "animated_wind_flutter": true,
+  "length_multiplier": 1.45,
+  "wind_flexibility": 3,
+  "polygon_counts": {
+    "HEAD_SURFACES": 2256,
+    "UPPER_RIBBONS": 3008,
+    "SIDE_RIBBONS": 2256,
+    "PECTORAL_FIN": 1504,
+    "PELVIC_FIN": 1128,
+    "ANAL_FIN": 1128,
+    "TAIL_UPPER": 1504,
+    "TAIL_MIDDLE": 1504,
+    "TAIL_LOWER": 1504
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "saved_source_shape_preserved": true,
+  "stage_wind_updates_geometry": true,
+  "roots_stay_pinned": true,
+  "stage_flat_mode_updates_geometry": true,
+  "parameter_links_survive_reload": true,
+  "solaris_stage_cooks": true,
+  "controller": "/stage/FISH_CONTROLS"
+}

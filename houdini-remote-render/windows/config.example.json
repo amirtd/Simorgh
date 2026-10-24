@@ -1,0 +1,8 @@
+{
+  "host": "100.x.y.z",
+  "username": "your-linux-user",
+  "port": 22,
+  "lop": "/stage/OUT",
+  "output": "D:/Phoenix/renders",
+  "jobs": {}
+}

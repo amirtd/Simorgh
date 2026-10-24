@@ -1,0 +1,8 @@
+{
+  "default_polygons": 20842,
+  "low_polygons": 3822,
+  "fast_preview_body_eyes_only": true,
+  "ribbon_toggle_verified": true,
+  "default_geometry_preserved": true,
+  "stage_cooks": true
+}

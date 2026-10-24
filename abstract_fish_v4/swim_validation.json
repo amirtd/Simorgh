@@ -1,0 +1,17 @@
+{
+  "timeline_motion": true,
+  "head_damped_tail_amplified": true,
+  "speed_cycles_per_second_verified": true,
+  "disable_restores_geometry": true,
+  "zero_strength_restores_geometry": true,
+  "topology_preserved": true,
+  "finite_positions": true,
+  "solaris_cooks": true,
+  "frames_checked": [
+    1,
+    7,
+    13,
+    19,
+    25
+  ]
+}

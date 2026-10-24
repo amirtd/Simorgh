@@ -1,0 +1,69 @@
+#usda 1.0
+(
+    defaultPrim = "World"
+    metersPerUnit = 1
+    upAxis = "Y"
+    renderSettingsPrimPath = "/Render/settings"
+    startTimeCode = 1
+    endTimeCode = 3
+)
+def Xform "World" {
+    def Camera "camera" {
+        double3 xformOp:translate = (0, 0, 6)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+        float focalLength = 50
+        float2 clippingRange = (0.1, 1000)
+    }
+    def Sphere "sphere" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    ) {
+        double radius = 1
+        double3 xformOp:translate.timeSamples = {
+            1: (-0.3, 0, 0),
+            2: (0, 0, 0),
+            3: (0.3, 0, 0)
+        }
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+        rel material:binding = </World/glass>
+    }
+    def Material "glass" {
+        token outputs:mtlx:surface.connect = </World/glass/surface.outputs:out>
+        def Shader "surface" {
+            uniform token info:id = "ND_standard_surface_surfaceshader"
+            float inputs:base = 0
+            float inputs:specular = 1
+            float inputs:specular_roughness = 0.05
+            float inputs:specular_IOR = 1.5
+            float inputs:transmission = 1
+            color3f inputs:transmission_color = (0.8, 0.95, 1)
+            token outputs:out
+        }
+    }
+    def DomeLight "light" {
+        color3f inputs:color = (0.8, 0.9, 1)
+        float inputs:intensity = 1
+    }
+    def DistantLight "key" {
+        float inputs:intensity = 3
+        float inputs:angle = 10
+        float3 xformOp:rotateXYZ = (-35, -25, 0)
+        uniform token[] xformOpOrder = ["xformOp:rotateXYZ"]
+    }
+}
+def Scope "Render" {
+    def RenderSettings "settings" {
+        rel camera = </World/camera>
+        rel products = </Render/product>
+        int2 resolution = (128, 128)
+    }
+    def RenderProduct "product" {
+        token productType = "raster"
+        token productName = "glass.exr"
+        rel orderedVars = </Render/beauty>
+    }
+    def RenderVar "beauty" {
+        token dataType = "color3f"
+        string sourceName = "C"
+        token sourceType = "raw"
+    }
+}

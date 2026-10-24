@@ -1,0 +1,22 @@
+{
+  "source_backup": "/home/amir/Documents/ChatGPT/Phoenix/abstract_fish_v9/abstract_fish_user_changes_20261022_211622.hipnc",
+  "existing_parameters_verified": 7845,
+  "existing_values_expressions_keyframes_unchanged": true,
+  "location": [
+    -43.3,
+    0.1,
+    0.0
+  ],
+  "rotation": [
+    -91.0,
+    -20.0,
+    4.0
+  ],
+  "tabs": [
+    "Preview",
+    "Motion",
+    "Ribbons",
+    "Color",
+    "Individual Ribbons"
+  ]
+}
