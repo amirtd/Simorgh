@@ -32,3 +32,8 @@
 *.mp4 filter=lfs diff=lfs merge=lfs -text
 *.mov filter=lfs diff=lfs merge=lfs -text
 *.zip filter=lfs diff=lfs merge=lfs -text
+
+# Keep scripts and documentation consistent across platforms
+*.py text eol=lf
+*.md text
+*.ps1 text eol=crlf

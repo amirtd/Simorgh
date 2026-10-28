@@ -39,6 +39,7 @@ render/
 renders/
 render-jobs/
 previews/
+/_output/
 *.log
 
 # Generated review bundles
@@ -53,3 +54,15 @@ previews/
 Thumbs.db
 *.swp
 *.swo
+
+# Legacy project working files
+*_bak*.hip*
+*_backup_*.hip*
+desktop.ini
+
+# Early test scene
+/test_box.hip
+
+# After Effects generated state
+Auto-Save/
+*.aep Logs/

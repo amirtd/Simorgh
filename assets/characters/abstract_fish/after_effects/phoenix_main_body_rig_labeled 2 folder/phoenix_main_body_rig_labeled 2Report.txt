@@ -1,0 +1,59 @@
+Report created: 
+	10/22/2026	10:16:29 PM
+
+Project name: phoenix_main_body_rig_labeled 2.aep
+
+Source files collected to: 
+	E:\Wirling Worlds\After Effects Fish\phoenix_main_body_rig_labeled 2 folder
+
+Source files collected: All
+
+Collected comps:  
+	PHOENIX_MAIN_BODY_RIG_1080P
+	RIG_NOTES_MAIN_PARTS_ONLY
+	Test
+	Test_render_01
+	FISH_PLANE_ART
+	FISH_SWIMS_OUT_SHOT
+	
+Number of collected files:  90
+
+Size of collected files:  162 MB
+
+Collected source files: 
+	C:\Users\tamadon\Downloads\abstract-water-drop-ripples-on-black-background-st-2026-10-02-21-26-22-utc.mov
+	Sequence "untitled[0001-0035].exr" at C:\Users\tamadon\Downloads\fish_exr_2-20261023T045710Z-1-001\fish_exr_2 with 35 files and 0 auxiliary files
+	C:\Users\tamadon\Downloads\Ornate Fantasy Fish Head with Flowing Fins.png
+	C:\Users\tamadon\Downloads\Ornate Fiery Fish-Tail Flourish.png
+	C:\Users\tamadon\Downloads\Ornate Multicolor Fantasy Fish Tail.png
+	C:\Users\tamadon\Downloads\seamless-looping-underwater-water-surface-animatio-2026-10-03-06-59-58-utc.mov
+	C:\Users\tamadon\Downloads\Test_render_01.mp4
+	E:\Wirling Worlds\After Effects Fish\houdini_frame_reference.png
+	E:\Wirling Worlds\Body Rig 2\body.png
+	E:\Wirling Worlds\Body Rig 2\foot_R.png
+	E:\Wirling Worlds\Body Rig 2\head_01.png
+	E:\Wirling Worlds\Body Rig 2\tail.png
+	E:\Wirling Worlds\Body Rig 2\wing_L.png
+	E:\Wirling Worlds\Body Rig 2\wing_R.png
+	Sequence "ink_drop.[0003-0044].png" at E:\Wirling Worlds\Houdini Ink Drop\render\New folder with 42 files and 0 auxiliary files
+	
+Rendering plug-ins:
+	Classic 3D
+	
+Effects used:  5
+
+Effect:  Bevel Alpha
+	
+Effect:  Checkbox Control
+	
+Effect:  Gaussian Blur
+	
+Effect:  Gaussian Blur (Legacy)
+	
+Effect:  Ripple
+	
+
+Layer:  Text Layer
+	External dependencies:  
+		Font family: “Times New Roman”, Font style: “Regular”
+
