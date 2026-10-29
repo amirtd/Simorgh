@@ -1,119 +1,119 @@
-r"""Create animator-facing koi controls in /stage for an existing fish HDA."""
+"""Make Solaris follow the OBJ koi without driving its animation controls."""
 
 import hou
-
 
 FISH_PATH = "/obj/koi_fish_hero"
 IMPORT_PATH = "/stage/koi_fish_sopimport"
 CONTROL_PATH = "/stage/koi_fish_controls"
+GEOMETRY_TRANSFORM_PATH = "/stage/koi_fish_geometry_transform"
 PRIM_PATH = "/world/koi_fish_hero"
-
-SWIM_PARMS = (
-    "enabled",
-    "swim_speed",
-    "body_amplitude",
-    "tail_amplitude",
-    "wavelength",
-    "body_stiffness",
-    "phase",
-    "turn",
-    "fish_bank",
-    "auto_bank",
-    "tail_flutter",
-    "flutter_speed",
-    "vertical_bob",
-    "bob_speed",
-    "curl_enable",
-    "curl_start_frame",
-    "curl_end_frame",
-    "curl_amount",
-    "curl_turns",
-    "curl_tightness",
-    "curl_spin_speed",
-    "curl_spin_phase",
-)
 
 
 def copy_animation(source, target):
-    """Copy keys/expression/value from one scalar parameter to another."""
-    target.deleteAllKeyframes()
+    """Copy animation itself, rather than creating a channel reference."""
     keys = source.keyframes()
+    value = source.eval()
+    target.deleteAllKeyframes()
     if keys:
         for key in keys:
             target.setKeyframe(key)
+        target.setKeyframeExtrapolation(True, source.keyframeExtrapolation(True))
+        target.setKeyframeExtrapolation(False, source.keyframeExtrapolation(False))
     else:
-        try:
-            target.setExpression(source.expression(), source.expressionLanguage())
-        except hou.OperationFailed:
-            target.set(source.eval())
+        target.set(value)
 
 
 def main():
-    stage = hou.node("/stage")
     fish = hou.node(FISH_PATH)
     sop_import = hou.node(IMPORT_PATH)
-    if fish is None:
-        raise RuntimeError("Missing " + FISH_PATH)
-    if sop_import is None:
-        raise RuntimeError("Missing " + IMPORT_PATH)
+    if fish is None or sop_import is None:
+        raise RuntimeError("Missing koi OBJ or SOP Import")
 
-    controls = hou.node(CONTROL_PATH)
-    if controls is None:
-        controls = stage.createNode("xform", "koi_fish_controls")
+    old = hou.node(CONTROL_PATH)
+    moved = []
+    if old is not None:
+        # Migrate only parameters still driven by the old Stage panel.
+        # Existing independent OBJ animation is authoritative and untouched.
+        for target in fish.parms():
+            if CONTROL_PATH + "/" not in target.rawValue():
+                continue
+            source = target.getReferencedParm()
+            if source == target or source.node() != old:
+                raise RuntimeError("Cannot safely migrate " + target.path())
+            if FISH_PATH + "/" in source.rawValue():
+                raise RuntimeError("Circular animation reference: " + source.path())
+            copy_animation(source, target)
+            moved.append(target.name())
 
+    # Reuse only the standard transform node. Remove its old rig controls and
+    # callbacks so there is no second animation panel that can drive the OBJ.
+    controls = old or hou.node("/stage").createNode("xform", "koi_fish_controls")
+    if controls.type().name() != "xform":
+        raise RuntimeError("Expected a Transform LOP at " + CONTROL_PATH)
+    controls.removeSpareParms()
     controls.parm("primpattern").set(PRIM_PATH)
-    controls.setColor(hou.Color((0.1, 0.65, 1.0)))
-    controls.setUserData("nodeshape", "trapezoid_up")
-
-    # Add the HDA's authored animator folders to the Stage control node.
-    group = controls.parmTemplateGroup()
-    for folder_name in ("Koi Swim Rig", "Curl Ball Release"):
-        old_folder = group.findFolder(folder_name)
-        if old_folder:
-            group.remove(old_folder.name())
-        source_folder = fish.parmTemplateGroup().findFolder(folder_name)
-        if source_folder is None:
-            raise RuntimeError("The fish HDA has no {} parameter folder".format(folder_name))
-        group.append(source_folder)
-    controls.setParmTemplateGroup(group)
-
-    # Preserve the current rig settings, then make the HDA follow Stage controls.
-    for name in SWIM_PARMS:
-        fish_parm = fish.parm(name)
-        stage_parm = controls.parm(name)
-        if fish_parm is None or stage_parm is None:
+    for name in (
+        "tx", "ty", "tz", "rx", "ry", "rz", "sx", "sy", "sz", "scale",
+        "px", "py", "pz", "prx", "pry", "prz", "xOrd", "rOrd",
+    ):
+        source = fish.parm(name)
+        target = controls.parm(name)
+        if source is None or target is None:
             continue
-        copy_animation(fish_parm, stage_parm)
-        fish_parm.deleteAllKeyframes()
-        fish_parm.setExpression(
-            'ch("{}/{}")'.format(CONTROL_PATH, name),
-            hou.exprLanguage.Hscript,
-        )
+        target.deleteAllKeyframes()
+        function = "chs" if target.parmTemplate().type() == hou.parmTemplateType.String else "ch"
+        target.setExpression('{}("{}/{}")'.format(function, FISH_PATH, name), hou.exprLanguage.Hscript)
+    for parm in controls.parmTuple("shear") or ():
+        parm.deleteAllKeyframes()
+        parm.set(0)
+    controls.parm("setabsolutexform").set(1)
+    controls.setComment("Animate /obj/koi_fish_hero. This node only imports its transforms; it does not drive OBJ controls.")
+    controls.setGenericFlag(hou.nodeFlag.DisplayComment, True)
+    controls.setColor(hou.Color((0.3, 0.6, 0.35)))
 
-    # Transfer OBJ transform animation to the Transform LOP. SOP Import ignores
-    # object transforms, whereas these LOP parameters author USD xform samples.
-    for name in ("tx", "ty", "tz", "rx", "ry", "rz", "sx", "sy", "sz"):
-        copy_animation(fish.parm(name), controls.parm(name))
-
-    # Insert controls immediately after the fish SOP Import, preserving its
-    # existing downstream connection (for example, directly into a camera LOP).
+    # SOP Import reads raw SOP points. The FBX geometry object's local
+    # transform (including its pre-transform) is separate from the outer HDA.
+    # Restore that inner transform on the imported mesh before applying the
+    # outer rig transform. Decomposition includes shear and ancestor transforms.
+    source_sop = sop_import.parm("soppath").evalAsNode()
+    if source_sop is None:
+        raise RuntimeError("Missing source SOP")
+    source_object = source_sop.parent()
+    while source_object and not isinstance(source_object, hou.ObjNode):
+        source_object = source_object.parent()
+    if source_object is None:
+        raise RuntimeError("Source SOP has no geometry object")
+    geometry_transform = hou.node(GEOMETRY_TRANSFORM_PATH)
+    if geometry_transform is None:
+        geometry_transform = hou.node("/stage").createNode("xform", "koi_fish_geometry_transform")
+        geometry_transform.setPosition((sop_import.position() + controls.position()) * 0.5)
+    geometry_transform.parm("primpattern").set(PRIM_PATH + "/*")
+    geometry_transform.parm("xforminworldspace").set(0)
+    geometry_transform.parm("setabsolutexform").set(1)
+    geometry_transform.parm("xOrd").set("srt")
+    geometry_transform.parm("rOrd").set("xyz")
+    matrix_expression = '(hou.node({!r}).worldTransform() * hou.node({!r}).worldTransform().inverted())'.format(source_object.path(), FISH_PATH)
+    for tuple_name, component in (("t", "translate"), ("r", "rotate"), ("s", "scale"), ("shear", "shear")):
+        for index, parm in enumerate(geometry_transform.parmTuple(tuple_name)):
+            parm.deleteAllKeyframes()
+            parm.setExpression(matrix_expression + ".explode()[{!r}][{}]".format(component, index), hou.exprLanguage.Python)
+    geometry_transform.setComment("Preserves the inner geometry object's full transform. Animation remains in /obj.")
+    geometry_transform.setGenericFlag(hou.nodeFlag.DisplayComment, True)
     consumers = [
-        (output, index)
-        for output in sop_import.outputs()
-        for index, input_node in enumerate(output.inputs())
-        if input_node == sop_import
+        (node, index)
+        for node in sop_import.outputs()
+        for index, input_node in enumerate(node.inputs())
+        if input_node == sop_import and node not in (controls, geometry_transform)
     ]
-    controls.setInput(0, sop_import)
-    for output, index in consumers:
-        if output != controls:
-            output.setInput(index, controls)
-
+    geometry_transform.setInput(0, sop_import)
+    controls.setInput(0, geometry_transform)
+    for node, index in consumers:
+        node.setInput(index, controls)
     sop_import.parm("authortimesamples").set("always")
-    controls.moveToGoodPosition()
-    controls.setCurrent(True, clear_all_selected=True)
-    controls.setDisplayFlag(True)
-    print("Stage koi controls: " + controls.path())
+    print("Migrated controls to OBJ:", moved)
+    print("Stage now follows:", FISH_PATH)
     return controls
 
 
-STAGE_KOI_CONTROLS = main()
+if __name__ == "__main__":
+    STAGE_KOI_CONTROLS = main()

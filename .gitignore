@@ -35,6 +35,7 @@ caches/
 *.part
 
 # Generated render output and render queue state
+/shots/
 render/
 renders/
 render-jobs/
